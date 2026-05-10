@@ -9,18 +9,25 @@ Marjon Suv — suv yetkazib berish xizmati uchun Telegram bot, Backend API va Po
   1. mahsulot tanlash;
   2. miqdor tanlash;
   3. manzil yuborish;
-  4. to'lov turini tanlash;
-  5. buyurtmani tasdiqlash.
+  4. joylashuv yuborish yoki o'tkazib yuborish;
+  5. qo'shimcha izoh yozish;
+  6. to'lov turini tanlash;
+  7. buyurtmani tasdiqlash.
 - Mahsulotlar:
   - 19L suv;
   - bo'sh idish almashtirish.
 - Buyurtma statuslari: `NEW`, `ACCEPTED`, `DELIVERING`, `DELIVERED`, `CANCELED`.
 - Yangi buyurtma haqida admin chatga Telegram xabarnoma yuboriladi.
-- Admin statistikasi:
-  - bugungi buyurtmalar soni;
-  - bugungi tushum;
-  - haftalik tushum;
-  - oylik tushum.
+- Admin panel:
+  - barcha buyurtmalarni ko'rish;
+  - buyurtmani qabul qilish yoki rad etish;
+  - buyurtmachi ma'lumotlarini ko'rish;
+  - kuryer tayinlash;
+  - bugungi buyurtmalar soni, bugungi/haftalik/oylik tushum.
+- Kuryer paneli:
+  - o'ziga biriktirilgan buyurtmalarni ko'rish;
+  - mijoz ma'lumotlarini olish;
+  - buyurtmani `DELIVERING` va `DELIVERED` statuslariga o'tkazish.
 - Backend API orqali health check, statistika va status yangilash endpointlari mavjud.
 
 ## Texnologiyalar
@@ -65,6 +72,7 @@ Asosiy sozlamalar:
 | `BOT_TOKEN` | Telegram BotFather tokeni |
 | `ADMIN_CHAT_ID` | Yangi buyurtmalar yuboriladigan admin chat ID |
 | `ADMIN_IDS` | Admin Telegram ID ro'yxati, vergul bilan ajratiladi |
+| `COURIER_IDS` | Default kuryer Telegram ID ro'yxati, vergul bilan ajratiladi |
 | `DATABASE_URL` | PostgreSQL connection string. `postgres://`, `postgresql://` yoki `postgresql+asyncpg://` qabul qilinadi; app async driverga avtomatik moslaydi. |
 | `WATER_19L_PRICE` | 19L suv narxi |
 | `EMPTY_BOTTLE_EXCHANGE_PRICE` | Bo'sh idish almashtirish narxi |
@@ -80,7 +88,7 @@ Railpack build aniqlashi uchun root katalogda `railpack.json`, `runtime.txt`, `m
 - `APP_MODE=bot` — Telegram bot polling rejimida ishga tushadi. Bu default qiymat.
 - `APP_MODE=api` — FastAPI server ishga tushadi va Railway beradigan `PORT` qiymatini ishlatadi.
 
-Start command sifatida `./start.sh` ishlatiladi. Agar platformada start command qo'lda kiritilsa, aynan `./start.sh` qiymatini yozing.
+Bot startup vaqtida `delete_webhook(drop_pending_updates=True)` chaqiriladi va polling faqat yangi instance orqali boshlanadi. Start command sifatida `./start.sh` ishlatiladi. Agar platformada start command qo'lda kiritilsa, aynan `./start.sh` qiymatini yozing.
 
 ## Docker orqali ishga tushirish
 

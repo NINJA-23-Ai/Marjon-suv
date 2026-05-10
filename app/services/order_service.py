@@ -3,7 +3,8 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import Settings
-from app.models.order import Order, OrderStatus
+from app.domain.enums import OrderStatus
+from app.models.order import Order
 from app.repositories.order_repository import OrderRepository
 from app.schemas.order import OrderCreate, SalesStats
 from app.services.pricing import PricingService
@@ -21,14 +22,29 @@ class OrderService:
             product=data.product,
             quantity=data.quantity,
             address=data.address.strip(),
+            latitude=data.latitude,
+            longitude=data.longitude,
+            comment=data.comment.strip() if data.comment else None,
             payment_type=data.payment_type,
             total_price=total_price,
             status=OrderStatus.NEW,
         )
         return await self.orders.create(order)
 
+    async def get_order(self, order_id: int) -> Order | None:
+        return await self.orders.get_by_id(order_id)
+
+    async def list_recent_orders(self, limit: int = 10) -> list[Order]:
+        return await self.orders.list_recent(limit)
+
+    async def list_courier_orders(self, courier_id: int) -> list[Order]:
+        return await self.orders.list_assigned_to_courier(courier_id)
+
     async def update_status(self, order_id: int, status: OrderStatus) -> Order | None:
         return await self.orders.update_status(order_id, status)
+
+    async def assign_courier(self, order_id: int, courier_id: int) -> Order | None:
+        return await self.orders.assign_courier(order_id, courier_id)
 
     async def sales_stats(self) -> SalesStats:
         now = datetime.now(UTC)

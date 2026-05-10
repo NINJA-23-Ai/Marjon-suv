@@ -24,8 +24,8 @@ def test_format_stats_uzbek_text() -> None:
 
     text = format_stats(stats)
 
-    assert "Bugungi buyurtmalar soni: 2" in text
-    assert "Bugungi tushum: 30 000 so'm" in text
+    assert "Bugungi buyurtmalar soni: <b>2</b>" in text
+    assert "Bugungi tushum: <b>30 000 so'm</b>" in text
     assert format_money(500000) == "500 000 so'm"
 
 

@@ -15,26 +15,30 @@ router = Router(name="start")
 
 @router.message(CommandStart())
 async def start(message: Message, state: FSMContext, session: AsyncSession, settings: Settings) -> None:
-    user = await UserService(session).get_by_telegram_id(message.from_user.id)
+    user = await UserService(session, settings).get_by_telegram_id(message.from_user.id)
     if user:
         await message.answer(
-            f"Assalomu alaykum, {user.name}! Marjon Suv botiga xush kelibsiz.",
-            reply_markup=main_menu(message.from_user.id in settings.admin_ids),
+            f"👋 Assalomu alaykum, <b>{user.name}</b>!\n\n"
+            "💧 <b>Marjon Suv</b> botiga xush kelibsiz. Kerakli bo'limni tanlang:",
+            reply_markup=main_menu(
+                message.from_user.id in settings.admin_ids,
+                user.is_courier or message.from_user.id in settings.courier_ids,
+            ),
         )
         return
     await state.set_state(RegistrationState.name)
-    await message.answer("Assalomu alaykum! Iltimos, ismingizni kiriting:")
+    await message.answer("👋 Assalomu alaykum!\n\nIltimos, <b>ismingizni</b> kiriting:")
 
 
 @router.message(RegistrationState.name)
 async def registration_name(message: Message, state: FSMContext) -> None:
     name = (message.text or "").strip()
     if len(name) < 2:
-        await message.answer("Ism kamida 2 ta belgidan iborat bo'lishi kerak. Qayta kiriting:")
+        await message.answer("⚠️ Ism kamida 2 ta belgidan iborat bo'lishi kerak. Qayta kiriting:")
         return
     await state.update_data(name=name)
     await state.set_state(RegistrationState.phone)
-    await message.answer("Telefon raqamingizni yuboring:", reply_markup=contact_keyboard())
+    await message.answer("📱 Telefon raqamingizni yuboring:", reply_markup=contact_keyboard())
 
 
 @router.message(RegistrationState.phone)
@@ -49,14 +53,17 @@ async def registration_phone(
     if not normalized_phone.startswith("+") and normalized_phone.isdigit():
         normalized_phone = "+" + normalized_phone
     if not normalized_phone.startswith("+") or not normalized_phone[1:].isdigit():
-        await message.answer("Telefon raqam formati noto'g'ri. Masalan: +998901234567")
+        await message.answer("⚠️ Telefon raqam formati noto'g'ri. Masalan: <code>+998901234567</code>")
         return
     data = await state.get_data()
-    user = await UserService(session).register(
+    user = await UserService(session, settings).register(
         UserCreate(telegram_id=message.from_user.id, name=data["name"], phone=normalized_phone)
     )
     await state.clear()
     await message.answer(
-        f"Rahmat, {user.name}! Endi buyurtma berishingiz mumkin.",
-        reply_markup=main_menu(message.from_user.id in settings.admin_ids),
+        f"✅ Rahmat, <b>{user.name}</b>! Endi buyurtma berishingiz mumkin.",
+        reply_markup=main_menu(
+            message.from_user.id in settings.admin_ids,
+            user.is_courier or message.from_user.id in settings.courier_ids,
+        ),
     )

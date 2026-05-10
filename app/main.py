@@ -5,14 +5,13 @@ from app.bot import create_bot, create_dispatcher
 from app.config.database import get_engine
 from app.config.logging import setup_logging
 from app.config.settings import get_settings
-from app.models import Base
+from app.config.schema import init_schema
 
 logger = logging.getLogger(__name__)
 
 
 async def init_db() -> None:
-    async with get_engine().begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    await init_schema(get_engine())
 
 
 async def main() -> None:
@@ -21,8 +20,13 @@ async def main() -> None:
     await init_db()
     bot = create_bot(settings)
     dispatcher = create_dispatcher(settings)
+    await bot.delete_webhook(drop_pending_updates=True)
     logger.info("Marjon Suv Telegram bot ishga tushdi")
-    await dispatcher.start_polling(bot)
+    await dispatcher.start_polling(
+        bot,
+        allowed_updates=dispatcher.resolve_used_update_types(),
+        close_bot_session=True,
+    )
 
 
 if __name__ == "__main__":

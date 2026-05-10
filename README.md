@@ -22,6 +22,7 @@ Marjon Suv — suv yetkazib berish xizmati uchun Telegram bot, Backend API va Po
 - Admin panel:
   - barcha buyurtmalarni ko'rish;
   - buyurtmani qabul qilish yoki rad etish;
+  - qabul/rad qilingandan keyin qaror tugmalari avtomatik yo'qoladi;
   - buyurtmachi ma'lumotlarini ko'rish;
   - kuryer tayinlash;
   - bugungi buyurtmalar soni, bugungi/haftalik/oylik tushum.
@@ -29,6 +30,10 @@ Marjon Suv — suv yetkazib berish xizmati uchun Telegram bot, Backend API va Po
   - o'ziga biriktirilgan buyurtmalarni ko'rish;
   - mijoz ma'lumotlarini olish;
   - buyurtmani `DELIVERING` va `DELIVERED` statuslariga o'tkazish.
+- Jarayon xabarnomalari:
+  - mijoz buyurtma qabul qilingani/rad etilgani, kuryer tayinlangani, kuryer yo'lga chiqqani va buyurtma yetkazilgani haqida xabar oladi;
+  - kuryer unga buyurtma tayinlanganda xabar oladi;
+  - admin kuryer yo'lga chiqqani va yetkazib bergani haqida xabar oladi.
 - Backend API orqali health check, statistika va status yangilash endpointlari mavjud.
 
 ## Texnologiyalar
@@ -56,7 +61,7 @@ app/
   services/         # Business logic va integratsiya xizmatlari
 ```
 
-Business logic `services` qatlamida, database query'lari `repositories` qatlamida, Telegram va HTTP kirish nuqtalari esa alohida saqlangan. Bu keyinchalik kuryer tizimi, CRM, to'lov modullari va dashboard qo'shishni osonlashtiradi.
+Admin va kuryer rollarida mijozlarga mo'ljallangan buyurtma berish tugmasi ko'rsatilmaydi. Business logic `services` qatlamida, database query'lari `repositories` qatlamida, Telegram va HTTP kirish nuqtalari esa alohida saqlangan. Bu keyinchalik kuryer tizimi, CRM, to'lov modullari va dashboard qo'shishni osonlashtiradi.
 
 ## Environment variables
 

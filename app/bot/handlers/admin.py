@@ -13,6 +13,7 @@ from app.bot.keyboards.common import admin_menu_keyboard
 from app.bot.states import AdminState
 from app.config.settings import Settings
 from app.domain.enums import OrderStatus
+from app.models.order import Order
 from app.services.notification_service import NotificationService
 from app.services.order_service import OrderService
 from app.services.user_service import UserService
@@ -28,6 +29,14 @@ def is_admin(telegram_id: int, settings: Settings) -> bool:
 async def is_courier(telegram_id: int, session: AsyncSession, settings: Settings) -> bool:
     user = await UserService(session, settings).get_by_telegram_id(telegram_id)
     return bool(user and user.is_courier)
+
+
+def admin_keyboard_for_order(order: Order):
+    return admin_order_keyboard(
+        order.id,
+        can_decide=order.status == OrderStatus.NEW,
+        can_assign=order.status in {OrderStatus.NEW, OrderStatus.ACCEPTED, OrderStatus.DELIVERING},
+    )
 
 
 @router.message(F.text == "🛠 Admin panel")
@@ -133,18 +142,37 @@ async def admin_callbacks(
         if not order:
             await callback.answer("Buyurtma topilmadi", show_alert=True)
             return
-        await callback.message.edit_text(format_order(order), reply_markup=admin_order_keyboard(order.id))
+        await callback.message.edit_text(format_order(order), reply_markup=admin_keyboard_for_order(order))
         await callback.answer()
         return
 
     if action in {"accept", "cancel"}:
+        current_order = await service.get_order(order_id)
+        if not current_order:
+            await callback.answer("Buyurtma topilmadi", show_alert=True)
+            return
+        if current_order.status != OrderStatus.NEW:
+            await callback.message.edit_text(
+                format_order(current_order),
+                reply_markup=admin_keyboard_for_order(current_order),
+            )
+            await callback.answer("Bu buyurtma allaqachon ko'rib chiqilgan", show_alert=True)
+            return
         status = OrderStatus.ACCEPTED if action == "accept" else OrderStatus.CANCELED
         order = await service.update_status(order_id, status)
         await session.commit()
         if not order:
             await callback.answer("Buyurtma topilmadi", show_alert=True)
             return
-        await callback.message.edit_text(format_order(order), reply_markup=admin_order_keyboard(order.id))
+        notification = NotificationService(bot, settings)
+        admin_name = callback.from_user.full_name
+        if status == OrderStatus.ACCEPTED:
+            await notification.notify_order_accepted(order)
+            await notification.notify_admin_order_decision(order, accepted=True, admin_name=admin_name)
+        else:
+            await notification.notify_order_canceled(order)
+            await notification.notify_admin_order_decision(order, accepted=False, admin_name=admin_name)
+        await callback.message.edit_text(format_order(order), reply_markup=admin_keyboard_for_order(order))
         await callback.answer("Status yangilandi")
         return
 
@@ -176,8 +204,10 @@ async def admin_callbacks(
         if not order:
             await callback.answer("Buyurtma topilmadi", show_alert=True)
             return
-        await NotificationService(bot, settings).notify_courier_assigned(order)
-        await callback.message.edit_text(format_order(order), reply_markup=admin_order_keyboard(order.id))
+        notification = NotificationService(bot, settings)
+        await notification.notify_courier_assigned(order)
+        await notification.notify_admin_courier_assigned(order, admin_name=callback.from_user.full_name)
+        await callback.message.edit_text(format_order(order), reply_markup=admin_keyboard_for_order(order))
         await callback.answer("Kuryer tayinlandi")
         return
 
@@ -199,7 +229,7 @@ async def courier_orders(message: Message, session: AsyncSession, settings: Sett
 
 
 @router.callback_query(F.data.startswith("courier:"))
-async def courier_callbacks(callback: CallbackQuery, session: AsyncSession, settings: Settings) -> None:
+async def courier_callbacks(callback: CallbackQuery, session: AsyncSession, settings: Settings, bot: Bot) -> None:
     if not await is_courier(callback.from_user.id, session, settings):
         await callback.answer("Bu amal faqat kuryerlar uchun.", show_alert=True)
         return
@@ -222,7 +252,14 @@ async def courier_callbacks(callback: CallbackQuery, session: AsyncSession, sett
         status = OrderStatus.DELIVERING if action == "delivering" else OrderStatus.DELIVERED
         order = await service.update_status(order_id, status)
         await session.commit()
-        await callback.message.edit_text(format_order(order), reply_markup=courier_order_keyboard(order.id))
+        notification = NotificationService(bot, settings)
+        if status == OrderStatus.DELIVERING:
+            await notification.notify_order_delivering(order)
+            reply_markup = courier_order_keyboard(order.id)
+        else:
+            await notification.notify_order_delivered(order)
+            reply_markup = None
+        await callback.message.edit_text(format_order(order), reply_markup=reply_markup)
         await callback.answer("Status yangilandi")
         return
 

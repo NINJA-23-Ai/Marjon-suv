@@ -4,17 +4,28 @@ from app.models.order import Order
 from app.models.user import User
 
 
-def admin_order_keyboard(order_id: int) -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
+def admin_order_keyboard(
+    order_id: int,
+    *,
+    can_decide: bool = True,
+    can_assign: bool = True,
+) -> InlineKeyboardMarkup:
+    inline_keyboard: list[list[InlineKeyboardButton]] = []
+    if can_decide:
+        inline_keyboard.append(
             [
                 InlineKeyboardButton(text="✅ Qabul qilish", callback_data=f"admin:accept:{order_id}"),
                 InlineKeyboardButton(text="❌ Rad etish", callback_data=f"admin:cancel:{order_id}"),
-            ],
-            [InlineKeyboardButton(text="🚚 Kuryer tayinlash", callback_data=f"admin:assign:{order_id}")],
-            [InlineKeyboardButton(text="👤 Buyurtmachi", callback_data=f"admin:customer:{order_id}")],
-        ]
+            ]
+        )
+    if can_assign:
+        inline_keyboard.append(
+            [InlineKeyboardButton(text="🚚 Kuryer tayinlash", callback_data=f"admin:assign:{order_id}")]
+        )
+    inline_keyboard.append(
+        [InlineKeyboardButton(text="👤 Buyurtmachi", callback_data=f"admin:customer:{order_id}")]
     )
+    return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
 def order_list_keyboard(orders: list[Order]) -> InlineKeyboardMarkup:

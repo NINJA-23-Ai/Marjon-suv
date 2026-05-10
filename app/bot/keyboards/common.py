@@ -4,11 +4,12 @@ from app.domain.enums import PaymentType, ProductType
 
 
 def main_menu(is_admin: bool = False, is_courier: bool = False) -> ReplyKeyboardMarkup:
-    rows = [[KeyboardButton(text="💧 Buyurtma berish")]]
-    if is_courier:
-        rows.append([KeyboardButton(text="🚚 Mening buyurtmalarim")])
     if is_admin:
-        rows.append([KeyboardButton(text="🛠 Admin panel"), KeyboardButton(text="📊 Statistika")])
+        rows = [[KeyboardButton(text="🛠 Admin panel"), KeyboardButton(text="📊 Statistika")]]
+    elif is_courier:
+        rows = [[KeyboardButton(text="🚚 Mening buyurtmalarim")]]
+    else:
+        rows = [[KeyboardButton(text="💧 Buyurtma berish")]]
     return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
 
 
@@ -18,7 +19,6 @@ def admin_menu_keyboard() -> ReplyKeyboardMarkup:
             [KeyboardButton(text="📦 Barcha buyurtmalar")],
             [KeyboardButton(text="📊 Statistika"), KeyboardButton(text="👥 Kuryerlar")],
             [KeyboardButton(text="➕ Kuryer qo'shish")],
-            [KeyboardButton(text="💧 Buyurtma berish")],
         ],
         resize_keyboard=True,
     )

@@ -46,10 +46,13 @@ async def cancel(message: Message, state: FSMContext, session: AsyncSession, set
 
 
 @router.message(F.text == "💧 Buyurtma berish")
-async def start_order(message: Message, state: FSMContext, session: AsyncSession) -> None:
-    user = await UserService(session).get_by_telegram_id(message.from_user.id)
+async def start_order(message: Message, state: FSMContext, session: AsyncSession, settings: Settings) -> None:
+    user = await UserService(session, settings).get_by_telegram_id(message.from_user.id)
     if not user:
         await message.answer("ℹ️ Avval /start orqali ro'yxatdan o'ting.")
+        return
+    if message.from_user.id in settings.admin_ids or user.is_courier:
+        await message.answer("⛔ Bu bo'lim faqat mijozlar uchun. Sizga tegishli paneldan foydalaning.")
         return
     await state.set_state(OrderState.product)
     await message.answer("💧 <b>Mahsulotni tanlang:</b>", reply_markup=product_keyboard())

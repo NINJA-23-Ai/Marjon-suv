@@ -60,10 +60,12 @@ async def registration_phone(
         UserCreate(telegram_id=message.from_user.id, name=data["name"], phone=normalized_phone)
     )
     await state.clear()
+    is_admin_user = message.from_user.id in settings.admin_ids
+    role_text = "Kerakli paneldan foydalanishingiz mumkin." if is_admin_user or user.is_courier else "Endi buyurtma berishingiz mumkin."
     await message.answer(
-        f"✅ Rahmat, <b>{user.name}</b>! Endi buyurtma berishingiz mumkin.",
+        f"✅ Rahmat, <b>{user.name}</b>! {role_text}",
         reply_markup=main_menu(
-            message.from_user.id in settings.admin_ids,
+            is_admin_user,
             user.is_courier,
         ),
     )

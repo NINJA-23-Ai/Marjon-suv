@@ -4,6 +4,7 @@ from app.config.database_url import DatabaseUrlError, normalize_database_url
 from app.domain.enums import ProductType
 from app.services.pricing import PricingService
 from app.utils.formatting import format_money, format_stats
+from app.utils.parsing import parse_int_list
 
 
 def test_pricing_service_calculates_total() -> None:
@@ -43,3 +44,8 @@ def test_normalize_database_url_rejects_bad_values_with_clear_error() -> None:
         assert "DATABASE_URL noto'g'ri formatda" in str(exc)
     else:
         raise AssertionError("DatabaseUrlError expected")
+
+
+def test_parse_int_list_accepts_comma_separated_admin_ids() -> None:
+    assert parse_int_list("111,222,333") == [111, 222, 333]
+    assert parse_int_list("[111, 222, 333]") == [111, 222, 333]

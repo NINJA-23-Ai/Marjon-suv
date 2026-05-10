@@ -3,6 +3,7 @@ from enum import StrEnum
 
 class ProductType(StrEnum):
     WATER_19L = "19L suv"
+    PUMP = "Pompa"
     EMPTY_BOTTLE_EXCHANGE = "Bo'sh idish almashtirish"
 
 

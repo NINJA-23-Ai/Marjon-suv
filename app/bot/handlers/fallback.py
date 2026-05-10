@@ -30,6 +30,6 @@ async def fallback(message: Message, state: FSMContext, session: AsyncSession, s
         "Kerakli bo'limni menyudan tanlang:",
         reply_markup=main_menu(
             message.from_user.id in settings.admin_ids,
-            user.is_courier or message.from_user.id in settings.courier_ids,
+            user.is_courier,
         ),
     )

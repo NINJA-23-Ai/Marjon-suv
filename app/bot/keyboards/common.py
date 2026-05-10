@@ -36,6 +36,7 @@ def product_keyboard() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text=f"💧 {ProductType.WATER_19L.value}")],
+            [KeyboardButton(text=f"🧴 {ProductType.PUMP.value}")],
             [KeyboardButton(text=f"🔁 {ProductType.EMPTY_BOTTLE_EXCHANGE.value}")],
             [KeyboardButton(text="❌ Bekor qilish")],
         ],

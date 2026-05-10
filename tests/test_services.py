@@ -7,10 +7,11 @@ from app.utils.formatting import format_money, format_stats
 
 
 def test_pricing_service_calculates_total() -> None:
-    settings = SimpleNamespace(water_19l_price=15000, empty_bottle_exchange_price=0)
+    settings = SimpleNamespace(water_19l_price=15000, pump_price=45000, empty_bottle_exchange_price=0)
     service = PricingService(settings)  # type: ignore[arg-type]
 
     assert service.total(ProductType.WATER_19L, 3) == 45000
+    assert service.total(ProductType.PUMP, 2) == 90000
     assert service.total(ProductType.EMPTY_BOTTLE_EXCHANGE, 5) == 0
 
 

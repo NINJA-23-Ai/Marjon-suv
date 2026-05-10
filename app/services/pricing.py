@@ -5,6 +5,7 @@ from app.domain.enums import ProductType
 
 class PriceSettings(Protocol):
     water_19l_price: int
+    pump_price: int
     empty_bottle_exchange_price: int
 
 
@@ -15,6 +16,7 @@ class PricingService:
     def unit_price(self, product: ProductType) -> int:
         prices = {
             ProductType.WATER_19L: self.settings.water_19l_price,
+            ProductType.PUMP: self.settings.pump_price,
             ProductType.EMPTY_BOTTLE_EXCHANGE: self.settings.empty_bottle_exchange_price,
         }
         return prices[product]

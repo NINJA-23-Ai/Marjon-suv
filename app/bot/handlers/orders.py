@@ -26,7 +26,10 @@ router = Router(name="orders")
 
 
 def clean_choice(text: str | None) -> str:
-    return (text or "").replace("💧 ", "").replace("🔁 ", "").replace("💵 ", "").replace("💳 ", "").strip()
+    value = text or ""
+    for emoji_prefix in ("💧 ", "🔁 ", "💵 ", "💳 ", "🧴 "):
+        value = value.replace(emoji_prefix, "")
+    return value.strip()
 
 
 @router.message(F.text == "❌ Bekor qilish")
@@ -37,7 +40,7 @@ async def cancel(message: Message, state: FSMContext, session: AsyncSession, set
         "❌ Amal bekor qilindi.",
         reply_markup=main_menu(
             message.from_user.id in settings.admin_ids,
-            bool(user and (user.is_courier or message.from_user.id in settings.courier_ids)),
+            bool(user and user.is_courier),
         ),
     )
 

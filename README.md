@@ -15,6 +15,7 @@ Marjon Suv — suv yetkazib berish xizmati uchun Telegram bot, Backend API va Po
   7. buyurtmani tasdiqlash.
 - Mahsulotlar:
   - 19L suv;
+  - pompa;
   - bo'sh idish almashtirish.
 - Buyurtma statuslari: `NEW`, `ACCEPTED`, `DELIVERING`, `DELIVERED`, `CANCELED`.
 - Yangi buyurtma haqida admin chatga Telegram xabarnoma yuboriladi.
@@ -70,11 +71,14 @@ Asosiy sozlamalar:
 | Variable | Tavsif |
 | --- | --- |
 | `BOT_TOKEN` | Telegram BotFather tokeni |
-| `ADMIN_CHAT_ID` | Yangi buyurtmalar yuboriladigan admin chat ID |
 | `ADMIN_IDS` | Admin Telegram ID ro'yxati, vergul bilan ajratiladi |
-| `COURIER_IDS` | Default kuryer Telegram ID ro'yxati, vergul bilan ajratiladi |
+| `ADMIN_CHAT_ID` | Yangi buyurtmalar yuboriladigan admin chat ID |
 | `DATABASE_URL` | PostgreSQL connection string. `postgres://`, `postgresql://` yoki `postgresql+asyncpg://` qabul qilinadi; app async driverga avtomatik moslaydi. |
+| `API_HOST` | API host qiymati |
+| `API_PORT` | API port qiymati |
+| `LOG_LEVEL` | Logging darajasi |
 | `WATER_19L_PRICE` | 19L suv narxi |
+| `PUMP_PRICE` | Pompa narxi |
 | `EMPTY_BOTTLE_EXCHANGE_PRICE` | Bo'sh idish almashtirish narxi |
 
 

@@ -22,7 +22,7 @@ async def start(message: Message, state: FSMContext, session: AsyncSession, sett
             "💧 <b>Marjon Suv</b> botiga xush kelibsiz. Kerakli bo'limni tanlang:",
             reply_markup=main_menu(
                 message.from_user.id in settings.admin_ids,
-                user.is_courier or message.from_user.id in settings.courier_ids,
+                user.is_courier,
             ),
         )
         return
@@ -64,6 +64,6 @@ async def registration_phone(
         f"✅ Rahmat, <b>{user.name}</b>! Endi buyurtma berishingiz mumkin.",
         reply_markup=main_menu(
             message.from_user.id in settings.admin_ids,
-            user.is_courier or message.from_user.id in settings.courier_ids,
+            user.is_courier,
         ),
     )

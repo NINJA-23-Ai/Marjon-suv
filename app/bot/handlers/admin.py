@@ -27,7 +27,7 @@ def is_admin(telegram_id: int, settings: Settings) -> bool:
 
 async def is_courier(telegram_id: int, session: AsyncSession, settings: Settings) -> bool:
     user = await UserService(session, settings).get_by_telegram_id(telegram_id)
-    return bool(user and (user.is_courier or telegram_id in settings.courier_ids))
+    return bool(user and user.is_courier)
 
 
 @router.message(F.text == "🛠 Admin panel")

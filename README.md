@@ -69,6 +69,16 @@ Asosiy sozlamalar:
 | `WATER_19L_PRICE` | 19L suv narxi |
 | `EMPTY_BOTTLE_EXCHANGE_PRICE` | Bo'sh idish almashtirish narxi |
 
+
+## Railway / Railpack orqali deploy qilish
+
+Railpack build aniqlashi uchun root katalogda `railpack.json`, `runtime.txt`, `main.py` va executable `start.sh` mavjud. Railway/Railpack deployment uchun environment variable'larni sozlang va kerakli runtime rejimini tanlang:
+
+- `APP_MODE=bot` — Telegram bot polling rejimida ishga tushadi. Bu default qiymat.
+- `APP_MODE=api` — FastAPI server ishga tushadi va Railway beradigan `PORT` qiymatini ishlatadi.
+
+Start command sifatida `./start.sh` ishlatiladi. Agar platformada start command qo'lda kiritilsa, aynan `./start.sh` qiymatini yozing.
+
 ## Docker orqali ishga tushirish
 
 ```bash

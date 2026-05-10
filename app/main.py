@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 from app.bot import create_bot, create_dispatcher
-from app.config.database import engine
+from app.config.database import get_engine
 from app.config.logging import setup_logging
 from app.config.settings import get_settings
 from app.models import Base
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 async def init_db() -> None:
-    async with engine.begin() as conn:
+    async with get_engine().begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 

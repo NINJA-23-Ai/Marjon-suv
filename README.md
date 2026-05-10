@@ -65,10 +65,13 @@ Asosiy sozlamalar:
 | `BOT_TOKEN` | Telegram BotFather tokeni |
 | `ADMIN_CHAT_ID` | Yangi buyurtmalar yuboriladigan admin chat ID |
 | `ADMIN_IDS` | Admin Telegram ID ro'yxati, vergul bilan ajratiladi |
-| `DATABASE_URL` | SQLAlchemy async PostgreSQL URL |
+| `DATABASE_URL` | PostgreSQL connection string. `postgres://`, `postgresql://` yoki `postgresql+asyncpg://` qabul qilinadi; app async driverga avtomatik moslaydi. |
 | `WATER_19L_PRICE` | 19L suv narxi |
 | `EMPTY_BOTTLE_EXCHANGE_PRICE` | Bo'sh idish almashtirish narxi |
 
+
+
+> Agar `sqlalchemy.exc.ArgumentError: Could not parse SQLAlchemy URL` xatosi chiqsa, `DATABASE_URL` qiymati to'liq PostgreSQL connection string emas yoki noto'g'ri ko'chirilgan bo'ladi. Railway'da odatda PostgreSQL plugin yaratib, uning `DATABASE_URL` qiymatini aynan shu nom bilan service variable sifatida ulang.
 
 ## Railway / Railpack orqali deploy qilish
 

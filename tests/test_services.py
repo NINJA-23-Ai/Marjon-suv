@@ -1,8 +1,9 @@
 from types import SimpleNamespace
 
+from app.config.database_url import DatabaseUrlError, normalize_database_url
 from app.domain.enums import ProductType
-from app.utils.formatting import format_money, format_stats
 from app.services.pricing import PricingService
+from app.utils.formatting import format_money, format_stats
 
 
 def test_pricing_service_calculates_total() -> None:
@@ -26,3 +27,18 @@ def test_format_stats_uzbek_text() -> None:
     assert "Bugungi buyurtmalar soni: 2" in text
     assert "Bugungi tushum: 30 000 so'm" in text
     assert format_money(500000) == "500 000 so'm"
+
+
+def test_normalize_database_url_accepts_railway_postgres_scheme() -> None:
+    url = normalize_database_url("postgres://user:secret@localhost:5432/marjon")
+
+    assert url == "postgresql+asyncpg://user:secret@localhost:5432/marjon"
+
+
+def test_normalize_database_url_rejects_bad_values_with_clear_error() -> None:
+    try:
+        normalize_database_url("not-a-url")
+    except DatabaseUrlError as exc:
+        assert "DATABASE_URL noto'g'ri formatda" in str(exc)
+    else:
+        raise AssertionError("DatabaseUrlError expected")

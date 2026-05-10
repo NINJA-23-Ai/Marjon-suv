@@ -4,7 +4,7 @@ from typing import Any
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
-from app.config.database import SessionLocal
+from app.config.database import get_session_factory
 
 
 class DatabaseSessionMiddleware(BaseMiddleware):
@@ -14,7 +14,7 @@ class DatabaseSessionMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: dict[str, Any],
     ) -> Any:
-        async with SessionLocal() as session:
+        async with get_session_factory()() as session:
             data["session"] = session
             result = await handler(event, data)
             await session.commit()
